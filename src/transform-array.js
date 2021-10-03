@@ -13,7 +13,41 @@ import { NotImplementedError } from '../extensions/index.js';
  * transform([1, 2, 3, '--discard-prev', 4, 5]) => [1, 2, 4, 5]
  * 
  */
-export default function transform(/* arr */) {
-  throw new NotImplementedError('Not implemented');
-  // remove line with error and write your code here
+
+const CONTROL_SEQUENCES = {
+  DISCARD_NEXT: '--discard-next',
+  DISCARD_PREV: '--discard-prev',
+  DOUBLE_NEXT: '--double-next',
+  DOUBLE_PREV: '--double-prev'
+}
+
+export default function transform(arr) {
+  if (Array.isArray(arr)) {
+    const result = [];
+    let discarded = null;
+    arr.forEach((value, index, arr) => {
+      if (value === CONTROL_SEQUENCES.DISCARD_NEXT) {
+        discarded = index + 1;
+      } else if (value === CONTROL_SEQUENCES.DISCARD_PREV) {
+        if (index > 0 && (index - 1) != discarded) {
+          result[index - 1] = arr[index + 1];
+          discarded = index + 1; 
+        }
+      } else if (value === CONTROL_SEQUENCES.DOUBLE_NEXT) {
+        if (index + 1 < arr.length) {
+          result.push(arr[index + 1]);
+        }
+      } else if (value === CONTROL_SEQUENCES.DOUBLE_PREV) {
+        if (index > 0 && (index - 1) != discarded) {
+          result.push(arr[index - 1]);
+        }
+      } else if (discarded != index){
+        result.push(value);
+      }
+    });
+
+    return result;
+  } else {
+    throw new Error("'arr' parameter must be an instance of the Array!");
+  }
 }
