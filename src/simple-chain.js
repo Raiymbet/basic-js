@@ -17,6 +17,7 @@ export default {
   },
   removeLink(position) {
     if (typeof position !== 'number' || position < 1 || position > this.chains.length) {
+      this.chains = [];
       throw new Error("You can\'t remove incorrect link!");
     }
 
